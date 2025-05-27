@@ -27,9 +27,34 @@ def recuperar_password_modal(request):
 
 def login_view(request: HttpRequest):
     if request.method == 'POST':
-        email = request.POST.get('correo_electronico')
-        password = request.POST.get('contraseña')
-        captcha_response = request.POST.get('g-recaptcha-response')
+        correo = request.POST.get('correo')
+        contraseña = request.POST.get('contraseña')
+
+        try:
+            usuario = Usuario.objects.get(correo_electronico=correo)
+
+            if usuario.contraseña == contraseña:
+                # Guardar sesión
+                request.session['usuario_id'] = usuario.num_control
+                request.session['tipo_usuario'] = usuario.tipo_usuario
+                request.session['nombre_usuario'] = usuario.nombre
+
+                # Redirigir según tipo de usuario
+                if usuario.tipo_usuario == 'Administrador':
+                    return redirect('AdministracionSistema') 
+                elif usuario.tipo_usuario == 'Tutor':
+                    return redirect('panelPrincipalDelTutor')  
+                elif usuario.tipo_usuario == 'Estudiante':
+                    return redirect('gestionTutorias')  
+
+            else:
+                messages.error(request, 'Contraseña incorrecta.')
+
+        except Usuario.DoesNotExist:
+            messages.error(request, 'No existe un usuario con ese correo electrónico.')
+
+    return render(request, 'index.html')
+       # captcha_response = request.POST.get('g-recaptcha-response')
 
         # Validación de CAPTCHA (opcional)
         # Puedes descomentar esto si ya tienes reCAPTCHA activo:
@@ -44,33 +69,6 @@ def login_view(request: HttpRequest):
         #     messages.error(request, 'Por favor verifica el CAPTCHA.')
         #     return redirect('index')
 
-        try:
-            user = Usuario.objects.get(correo_electronico=email)
-
-            if check_password(password, user.contraseña):
-                request.session['num_control'] = user.num_control
-                request.session['nombre'] = user.nombre
-                request.session['tipo_usuario'] = user.tipo_usuario
-
-                # Guardar la fecha de última sesión
-                user.ultima_sesion = timezone.now()
-                user.save()
-
-                if user.tipo_usuario == 'Tutor':
-                    return redirect('panel_tutor')
-                elif user.tipo_usuario == 'Estudiante':
-                    return redirect('gestion_tutorias')
-                elif user.tipo_usuario == 'Administrador':
-                    return redirect('admin_panel')
-            else:
-                messages.error(request, 'Contraseña incorrecta.')
-                return redirect('index')
-
-        except Usuario.DoesNotExist:
-            messages.error(request, 'No se encontró una cuenta con ese correo electrónico.')
-            return redirect('index')
-
-    return redirect('index')
 
 def logout_view(request):
     logout(request)
@@ -194,3 +192,12 @@ def altas_modal2(request):
                 errores.append("Error al guardar el usuario.")
     
     return render(request, 'modals/altas_modal.html', {'errores': errores, 'data': data})
+
+def vista_admin(request):
+    return render(request, 'AdministracionSistema.html')
+
+def vista_tutor(request):
+    return render(request, 'panelPrincipalDelTutor.html')
+
+def vista_estudiante(request):
+    return render(request, 'gestionTutorias.html')
