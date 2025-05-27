@@ -1,0 +1,44 @@
+<div class="modal-body">
+  <form method="post">
+    {% csrf_token %}
+
+    <!-- Mensajes de error -->
+    {% if errores %}
+      <div style="color: red; margin-bottom: 10px;">
+        <ul>
+          {% for error in errores %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <!-- Campos del formulario -->
+    <input type="text" name="num_control" placeholder="Número de control" value="{{ data.num_control|default_if_none:'' }}" required><br>
+
+    <input type="text" name="nombre" placeholder="Nombre" value="{{ data.nombre|default_if_none:'' }}" required><br>
+
+    <input type="text" name="primer_apellido" placeholder="Primer apellido" value="{{ data.primer_apellido|default_if_none:'' }}" required><br>
+
+    <input type="text" name="segundo_apellido" placeholder="Segundo apellido" value="{{ data.segundo_apellido|default_if_none:'' }}"><br>
+
+    <input type="email" name="correo_electronico" placeholder="Correo electrónico" value="{{ data.correo_electronico|default_if_none:'' }}" required><br>
+
+    <input type="password" name="contraseña" placeholder="Contraseña" required><br>
+
+    <input type="password" name="confirmar_contraseña" placeholder="Confirmar contraseña" required><br>
+
+    <input type="number" name="semestre" placeholder="Semestre" value="{{ data.semestre|default_if_none:'' }}"><br>
+
+    <input type="date" name="fecha_nac" value="{{ data.fecha_nac|default_if_none:'' }}"><br>
+
+    <select name="tipo_usuario" required>
+      <option value="">Seleccione tipo de usuario</option>
+      <option value="Estudiante" {% if data.tipo_usuario == "Estudiante" %}selected{% endif %}>Estudiante</option>
+      <option value="Tutor" {% if data.tipo_usuario == "Tutor" %}selected{% endif %}>Tutor</option>
+      <option value="Administrador" {% if data.tipo_usuario == "Administrador" %}selected{% endif %}>Administrador</option>
+    </select><br><br>
+
+    <button type="submit">Registrar</button>
+  </form>
+</div>

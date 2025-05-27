@@ -17,6 +17,16 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
+from tutorias import views
+
 urlpatterns = [
-    path('admin/', admin.site.urls),
+     path('', views.index, name='index'),
+    path('login-modal/', views.login_modal, name='login_modal'),
+    path('recuperar-password-modal/', views.recuperar_password_modal, name='recuperar_password_modal'),
+    path('login/', views.login_view, name='login'),
+    path('logout/', views.logout_view, name='logout'),
+    path('restablecer_contraseña/', views.reset_password_view, name='restablecer_contraseña'),
+    path('registro/', views.registro_usuario, name='registro_usuario'),
+    path('altas-modal/', views.altas_modal, name='altas_modal'),
+    path('altas/', views.altas_modal2, name='altas'),
 ]

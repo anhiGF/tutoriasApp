@@ -1,0 +1,7 @@
+<form method="POST">
+    {% csrf_token %}
+    <input type="hidden" name="token" value="{{ token }}">
+    <label>Nueva Contraseña:</label>
+    <input type="password" name="nueva_contraseña" required>
+    <button type="submit">Restablecer Contraseña</button>
+</form>
